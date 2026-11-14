@@ -63,3 +63,17 @@ spec:
           workspace: shared-workspace
         - name: dockerconfig
           workspace: dockerconfig
+
+    - name: deploy
+      runAfter:
+        - build
+      taskRef:
+        name: openshift-client
+        kind: ClusterTask
+      params:
+        - name: SCRIPT
+          value: |
+            oc set image deployment/ci-cd-final-project ci-cd-final-project=us.icr.io/sn-labs-h541969/ci-cd-final-project:latest
+            oc rollout restart deployment/ci-cd-final-project
+            oc rollout status deployment/ci-cd-final-project --timeout=120s
+
